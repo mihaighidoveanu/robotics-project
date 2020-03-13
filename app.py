@@ -3,6 +3,8 @@ import cv2
 import numpy as np
 import re
 import os
+import errno
+import pickle
 
 from inference import Network
 
@@ -102,10 +104,13 @@ def perform_inference(args, i):
     m = ".\models\human-pose-estimation-0001.xml"
     n, c, h, w = inference_network.load_model(m, args.d, args.c)
 
+    # Get the file name from the path
+    input_name = re.split(r'\\', i)[-1].split('.')[-2]
+
     # Read the input image
     image = cv2.imread(i)
 
-    ### TODO: Preprocess the input image
+    ### Preprocess the input image
     preprocessed_image = preprocessing(image, h, w)
 
     # Perform synchronous inference on the image
@@ -114,16 +119,26 @@ def perform_inference(args, i):
     # Obtain the output of the inference request
     output = inference_network.extract_output()
 
-    
+    # TODO: Save the raw format of output
+    filename = "outputs/{}/rawOutput".format(input_name)
+    if not os.path.exists(os.path.dirname(filename)):
+        try:
+            os.makedirs(os.path.dirname(filename))
+        except OSError as exc: # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+
+    with open(filename, "wb") as f:
+        pickle.dump(output, f)
+
     ### feeding the output to that function.
     processed_output = handle_pose_output(output, image.shape)
 
     # Create an output image based on network
     output_image = create_output_image(image, processed_output)
 
-    input_name = re.split(r'\\', i)[-1].split('.')[-2]
     # Save down the resulting image
-    cv2.imwrite("outputs/{}-output.png".format(input_name), output_image)
+    cv2.imwrite("outputs/{}/output.png".format(input_name), output_image)
 
 
 
