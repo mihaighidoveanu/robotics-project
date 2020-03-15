@@ -1,6 +1,6 @@
 # robotics-project
 
-Main paper of the project is [here]().
+Main paper of the project is [here](https://theses.liacs.nl/pdf/RobbinBorst.pdf).
 You find above guidelines and methods for each of our tasks.
 
 ## OpenVino Setup
