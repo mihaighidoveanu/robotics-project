@@ -10,13 +10,7 @@ You find above guidelines and methods for each of our tasks.
 4. cd App folder
 5. run app.py
 
-## Simulator Setup
-For simulations, I used [Webots](https://cyberbotics.com/?tab-language=python).
-You can find installations instructions [here](https://cyberbotics.com/doc/guide/installing-webots?tab-language=python&tab-os=linux).
-I used the tarball installation for Linux and it worked with no problems!
-A simulated robot is controlled by a controller file. You can choose the file it runs in the app GUI by modifying the _controller_ field of the robot node. Or, for more control and debugging, you can set the _controller_ field to __extern__ and then running the controller from the command line. This way, you can see the console output and even run the controllers with the debugger. You can find more information on controllers [here](https://cyberbotics.com/doc/guide/running-extern-robot-controllers?tab-language=python&tab-os=linux).
-
-## Choregraphe
+## Choregraphe simulator setup
 
 For this error :
 ```
@@ -30,3 +24,9 @@ cd /your_choregraphe_directory/lib/ (the directory in which is present libz.so.1
 sudo mv libz.so.1 libz.so.1.old
 sudo ln -s /lib/x86_64-linux-gnu/libz.so.1
 ```
+
+## Webots Simulator Setup
+For simulations, I used [Webots](https://cyberbotics.com/?tab-language=python).
+You can find installations instructions [here](https://cyberbotics.com/doc/guide/installing-webots?tab-language=python&tab-os=linux).
+I used the tarball installation for Linux and it worked with no problems!
+A simulated robot is controlled by a controller file. You can choose the file it runs in the app GUI by modifying the _controller_ field of the robot node. Or, for more control and debugging, you can set the _controller_ field to __extern__ and then running the controller from the command line. This way, you can see the console output and even run the controllers with the debugger. You can find more information on controllers [here](https://cyberbotics.com/doc/guide/running-extern-robot-controllers?tab-language=python&tab-os=linux).
