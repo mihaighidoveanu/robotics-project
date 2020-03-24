@@ -37,5 +37,5 @@ A simulated robot is controlled by a controller file. You can choose the file it
 
 To use Choregraph with Webots, follow instructions [here](https://github.com/cyberbotics/naoqisim).
 If after running the *make* command in the root directory, it fails at some point, try running the app anyway. It might work.
-Choose the world without camera when opening Webots. We don't need the camera for our project, and Nao will move smoother in the simulation.
+Choose the world without camera when opening Webots, from the worlds available in the *naoqisim* package. We don't need the camera for our project, and Nao will move smoother in the simulation.
 
