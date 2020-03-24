@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<package uuid="main-964fa2" installOnlyAtStartup="false" version="0.0.0">
+<package uuid="main-f4d673">
  <names>
   <name lang="en_US">Main</name>
  </names>
@@ -11,9 +11,7 @@
  </descriptionLanguages>
  <contents>
   <behaviorContent path="behavior_1">
-   <userRequestable/>
    <nature>interactive</nature>
-   <autonomous/>
    <permissions/>
   </behaviorContent>
  </contents>

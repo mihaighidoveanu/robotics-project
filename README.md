@@ -12,6 +12,8 @@ You find above guidelines and methods for each of our tasks.
 
 ## Choregraphe simulator setup
 
+Search for choregraphe and download it from [here](http://doc.aldebaran.com/2-4/dev/community_software.html#retrieving-software).
+
 For this error :
 ```
 ...lib/libz.so.1: version `ZLIB_1.2.9' not found (required by /usr/lib/x86_64-linux-gnu/libpng16.so.16)
@@ -35,4 +37,5 @@ A simulated robot is controlled by a controller file. You can choose the file it
 
 To use Choregraph with Webots, follow instructions [here](https://github.com/cyberbotics/naoqisim).
 If after running the *make* command in the root directory, it fails at some point, try running the app anyway. It might work.
+Choose the world without camera when opening Webots. We don't need the camera for our project, and Nao will move smoother in the simulation.
 
