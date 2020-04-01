@@ -1,0 +1,33 @@
+#include "KinematicsDefines.h"
+
+const double PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306;
+const double TORADIAN = PI / 180.0;
+const int LIMBS = 4;
+const int MAX_IK_ITERATIONS = 50;
+const int ANGLES = 24;
+const double ANGLEDIFF = 0.5;
+const double LAMBDASTART = 1e-2;
+const double EPS = 1e-5;
+
+//The considered limbs
+enum limbs {LEFT_ARM = 0, LEFT_LEG, RIGHT_LEG, RIGHT_ARM};
+
+const int limbStart[4] = {2, 7, 13, 19};
+const int limbSize[4] = {5, 6, 6, 5};
+const int INF = 1e20;
+
+double lowerLim[] = {HeadYawLow, HeadPitchLow, 
+                  LShoulderPitchLow, LShoulderRollLow, LElbowYawLow, LElbowRollLow, LWristYawLow, 
+                  LHipYawPitchLow, LHipRollLow, LHipPitchLow, LKneePitchLow, LAnklePitchLow, LAnkleRollLow,
+                  RHipYawPitchLow, RHipRollLow, RHipPitchLow, RKneePitchLow, RAnklePitchLow, RAnkleRollLow,
+                  RShoulderPitchLow, RShoulderRollLow, RElbowYawLow, RElbowRollLow, RWristYawLow
+                  };
+   
+double upperLim[] = {HeadYawHigh, HeadPitchHigh, 
+                  LShoulderPitchHigh, LShoulderRollHigh, LElbowYawHigh, LElbowRollHigh, LWristYawHigh, 
+                  LHipYawPitchHigh, LHipRollHigh, LHipPitchHigh, LKneePitchHigh, LAnklePitchHigh, LAnkleRollHigh,
+                  RHipYawPitchHigh, RHipRollHigh, RHipPitchHigh, RKneePitchHigh, RAnklePitchHigh, RAnkleRollHigh,
+                  RShoulderPitchHigh, RShoulderRollHigh, RElbowYawHigh, RElbowRollHigh, RWristYawHigh
+                  };
+
+enum supportMode {LLEG, RLEG, LEGS};
