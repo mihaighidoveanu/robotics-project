@@ -1,4 +1,3 @@
-#include "Kinect.h"
 #include <NAOKinematics.h>
 #include <KinematicsDefines.h>
 #include <Eigen/Dense>
@@ -6,6 +5,8 @@
 #include <alproxies/almotionproxy.h>
 #include <cmath>
 #include <fstream>
+
+#include <kinect.h>
 
 using namespace KDeviceLists;
 using namespace std;

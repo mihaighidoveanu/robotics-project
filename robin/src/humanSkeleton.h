@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#include "Kinect.h"
+#include <kinect.h>
 using namespace std;
 
 template<typename T>
@@ -19,8 +19,9 @@ class HumanSkeleton {
 		~HumanSkeleton();
 		HumanSkeleton();
 		bool getSkeletonCoordinates(vector<Joint>& jointCoordinates);
+        KinectSensor * sensor;
 	private:
-		IKinectSensor* sensor;
+		/* IKinectSensor* sensor; */
 		IBodyFrameReader* bodyFrameReader;      
       Joint joints[JointType_Count];
 		void getSkeletonData(const int bodyCount, IBody** bodies);

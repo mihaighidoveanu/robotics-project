@@ -3,6 +3,7 @@
 #include "humanSkeleton.h"
 #include "nao.h"
 #include <boost/atomic.hpp>
+#include <kinect.h>
  
 using namespace AL;
 using namespace KDeviceLists;

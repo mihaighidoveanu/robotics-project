@@ -85,7 +85,7 @@ void Imitator::inverseKinematics(const int limbID, const int type, double prevIK
       }//else
    }//for   
    if (type == 0)
-      newError = min(newError, currError[limbID]);
+      newError = std::min(newError, currError[limbID]);
 
    //If the IK has been started for a 2nd time, but the new error is greater,
    //use the best obtained angles instead
@@ -101,7 +101,7 @@ void Imitator::inverseKinematics(const int limbID, const int type, double prevIK
             prevIKAngles[limbStart[limbID] + i] = evaluator.getKinematicsAngle(limbStart[limbID] + i);
             evaluator.setKinematicsAngle(limbStart[limbID] + i, 0.0); //the zero posture
          }//for
-         return inverseKinematics(limbID, 1, newError);
+         inverseKinematics(limbID, 1, newError);
       }//if
       else if (type == 1) {
          if (newError < prevIKError)
@@ -112,7 +112,7 @@ void Imitator::inverseKinematics(const int limbID, const int type, double prevIK
             max = nao.jointsUpperLim[limbStart[limbID] + i];
             evaluator.setKinematicsAngle(limbStart[limbID] + i, (max - min) * ((double)rand() / (double)RAND_MAX) + min); //random posture           
          }//for
-         return inverseKinematics(limbID, 2, min(prevIKError, newError));
+         inverseKinematics(limbID, 2, std::min(prevIKError, newError));
       }//else if      
    }//if         
 }//inverseKinematics
