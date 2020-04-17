@@ -10,6 +10,12 @@ You find above guidelines and methods for each of our tasks.
 4. cd App folder
 5. run app.py
 
+## Dependencies
+- Download Aldebaran SDK [here](http://doc.aldebaran.com/2-1/dev/cpp/install_guide.html)
+- Setup qibuild [here](http://doc.aldebaran.com/qibuild/beginner/qibuild/aldebaran.html)
+- C++ NAOH25 - [NaoKinematics](https://github.com/kouretes/NAOKinematics/tree/master/Cpp/NAOH25)
+- C++ [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page)
+
 ## Choregraphe simulator setup
 
 Search for choregraphe and download it from [here](http://doc.aldebaran.com/2-4/dev/community_software.html#retrieving-software).
