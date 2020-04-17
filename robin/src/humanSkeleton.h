@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#include <kinect.h>
+#include "kinect.h"
 using namespace std;
 
 template<typename T>

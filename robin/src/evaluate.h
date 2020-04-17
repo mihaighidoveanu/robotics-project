@@ -6,7 +6,7 @@
 #include <cmath>
 #include <fstream>
 
-#include <kinect.h>
+#include "kinect.h"
 
 using namespace KDeviceLists;
 using namespace std;

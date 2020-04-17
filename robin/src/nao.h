@@ -11,7 +11,7 @@
 #include <boost/geometry/algorithms/assign.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry.hpp>
-#include <kinect.h>
+#include "kinect.h"
 
 using namespace KDeviceLists;
 using namespace std;
