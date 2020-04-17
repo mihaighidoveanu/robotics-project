@@ -4,3 +4,4 @@ __pycache__/
 *.wbproj
 **/archive
 **/.qi
+**/build*
