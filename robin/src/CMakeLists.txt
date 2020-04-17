@@ -2,13 +2,14 @@
 # Copyright (c) 2011 Aldebaran Robotics. All Rights Reserved.
 
 cmake_minimum_required(VERSION 2.6.4 FATAL_ERROR)
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}" ${CMAKE_MODULE_PATH})
-
 # needed for ABI compatibility
 set(CMAKE_CXX_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0")
 
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}" ${CMAKE_MODULE_PATH})
+
+
 # Give a name to the project.
-project(nao-imitator)
+project(proj)
 # This include enable you to use our CMake framework
 find_package(qibuild)
 
