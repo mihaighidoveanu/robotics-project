@@ -1,161 +1,153 @@
-import argparse
+import os
+from argparse import ArgumentParser
+import json
 import cv2
 import numpy as np
-import re
-import os
-import errno
 import pickle
 
-from inference import Network
+from modules.input_reader import VideoReader, ImageReader
+from modules.draw import Plotter3d, draw_poses
+from modules.parse_poses import parse_poses
 
-def get_args():
-    '''
-    Gets the arguments from the command line.
-    '''
-    parser = argparse.ArgumentParser("Basic Edge App with Inference Engine")
-    # -- Create the descriptions for the commands
 
-    c_desc = "CPU extension file location, if applicable"
-    d_desc = "Device, if not CPU (GPU, FPGA, MYRIAD)"
-    #i_desc = "The location of the input image"
+def rotate_poses(poses_3d, R, t):
+    R_inv = np.linalg.inv(R)
+    for pose_id in range(len(poses_3d)):
+        pose_3d = poses_3d[pose_id].reshape((-1, 4)).transpose()
+        pose_3d[0:3, :] = np.dot(R_inv, pose_3d[0:3, :] - t)
+        poses_3d[pose_id] = pose_3d.transpose().reshape(-1)
 
-    # -- Add required and optional groups
-    parser._action_groups.pop()
-    required = parser.add_argument_group('required arguments')
-    optional = parser.add_argument_group('optional arguments')
+    return poses_3d
 
-    # -- Create the arguments
-    #required.add_argument("-i", help=i_desc, required=True)
-    optional.add_argument("-c", help=c_desc, default=None)
-    optional.add_argument("-d", help=d_desc, default="CPU")
+
+if __name__ == '__main__':
+    parser = ArgumentParser(description='3D human pose estimation.'
+                                        'Press esc to exit, "p" to (un)pause video or process next image.')
+
+    parser.add_argument('--video', help='Optional. Path to video file or camera id.', type=str, default='')
+    parser.add_argument('-d', '--device',
+                        help='Optional. Specify the target device to infer on: CPU or GPU. '
+                             'The demo will look for a suitable plugin for device specified '
+                             '(by default, it is CPU).',
+                        type=str, default='CPU')
+    parser.add_argument('--images', help='Optional. Path to input image(s).', nargs='+', default='')
+    parser.add_argument('--height-size', help='Optional. Network input layer height size.', type=int, default=256)
+    parser.add_argument('--extrinsics-path',
+                        help='Optional. Path to file with camera extrinsics.',
+                        type=str, default=None)
+    parser.add_argument('--fx', type=np.float32, default=-1, help='Optional. Camera focal length.')
     args = parser.parse_args()
 
-    return args
+    if args.video == '' and args.images == '':
+        raise ValueError('Either --video or --image has to be provided')
+
+    stride = 8
 
 
-def get_mask(processed_output):
-    '''
-    Given an input image size and processed output for a semantic mask,
-    returns a masks able to be combined with the original image.
-    '''
-    # Create an empty array for other color channels of mask
-    empty = np.zeros(processed_output.shape)
-    # Stack to make a Green mask where text detected
-    mask = np.dstack((empty, processed_output, empty))
+    args.model = "..\models\human-pose-estimation-3d.xml"
+   
+    from modules.inference_engine_openvino import InferenceEngineOpenVINO
+    net = InferenceEngineOpenVINO(args.model, args.device)
 
-    return mask
+    canvas_3d = np.zeros((720, 1280, 3), dtype=np.uint8)
+    plotter = Plotter3d(canvas_3d.shape[:2])
+    canvas_3d_window_name = 'Canvas 3D'
+    cv2.namedWindow(canvas_3d_window_name)
+    cv2.setMouseCallback(canvas_3d_window_name, Plotter3d.mouse_callback)
 
+    file_path = args.extrinsics_path
+    if file_path is None:
+        file_path = os.path.join('data', 'extrinsics.json')
+    with open(file_path, 'r') as f:
+        extrinsics = json.load(f)
+    R = np.array(extrinsics['R'], dtype=np.float32)
+    t = np.array(extrinsics['t'], dtype=np.float32)
 
-def create_output_image(image, output):
-    '''
-    Using input image, and processed output,
-    creates an output image showing the result of inference.
-    '''
-    # Remove final part of output not used for heatmaps
-    output = output[:-1]
-    # Get only pose detections above 0.5 confidence, set to 255
-    for c in range(len(output)):
-        output[c] = np.where(output[c]>0.5, 255, 0)
-    # Sum along the "class" axis
-    output = np.sum(output, axis=0)
-    # Get semantic mask
-    pose_mask = get_mask(output)
-    # Combine with original image
-    image = image + pose_mask
-    return image
-    
-def handle_pose_output(output, input_shape):
-    '''
-    Handles the output of the Pose Estimation model.
-    Returns ONLY the keypoint heatmaps, and not the Part Affinity Fields.
-    '''
-    # TODO 1: Extract only the second blob output (keypoint heatmaps)
-    heatmaps = output['Mconv7_stage2_L2']
-    # TODO 2: Resize the heatmap back to the size of the input
-    # Create an empty array to handle the output map
-    out_heatmap = np.zeros([heatmaps.shape[1], input_shape[0], input_shape[1]])
-    # Iterate through and re-size each heatmap
-    for h in range(len(heatmaps[0])):
-        out_heatmap[h] = cv2.resize(heatmaps[0][h], input_shape[0:2][::-1])
+    frame_provider = ImageReader(args.images)
+    is_video = False
+    if args.video != '':
+        frame_provider = VideoReader(args.video)
+        is_video = True
+    base_height = args.height_size
+    fx = args.fx
 
-    return out_heatmap
+    delay = 1
+    esc_code = 27
+    p_code = 112
+    space_code = 32
+    mean_time = 0
+    for frame in frame_provider:
+        current_time = cv2.getTickCount()
+        if frame is None:
+            break
+        input_scale = base_height / frame.shape[0]
+        scaled_img = cv2.resize(frame, dsize=None, fx=input_scale, fy=input_scale)
+        scaled_img = scaled_img[:, 0:scaled_img.shape[1] - (scaled_img.shape[1] % stride)]  # better to pad, but cut out for demo
+        if fx < 0:  # Focal length is unknown
+            fx = np.float32(0.8 * frame.shape[1])
 
-def preprocessing(input_image, height, width):
-    '''
-    Given an input image, height and width:
-    - Resize to width and height
-    - Transpose the final "channel" dimension to be first
-    - Reshape the image to add a "batch" of 1 at the start 
-    '''
-    image = np.copy(input_image)
-    image = cv2.resize(image, (width, height))
-    image = image.transpose((2,0,1))
-    image = image.reshape(1, 3, height, width)
+        inference_result = net.infer(scaled_img)
+        poses_3d, poses_2d = parse_poses(inference_result, input_scale, stride, fx, is_video)
 
-    return image
+        file_name = frame_provider.get_file_name().split('\\')[-1].split('.')[-2]
 
-def perform_inference(args, i):
-    '''
-    Performs inference on an input image, given a model.
-    '''
-    # Create a Network for using the Inference Engine
-    inference_network = Network()
-    # Load the model in the network, and obtain its input shape
-    m = ".\models\human-pose-estimation-0001.xml"
-    n, c, h, w = inference_network.load_model(m, args.d, args.c)
+        output_file = f"outputs\{file_name}"
 
-    # Get the file name from the path
-    input_name = re.split(r'\\', i)[-1].split('.')[-2]
+        with open(output_file + "_3d", "wb") as f:
+            pickle.dump(poses_3d, f)
+        with open(output_file + "_3d_rotated", "wb") as f:
+            pickle.dump(rotate_poses(poses_3d, R, t), f)
+        with open(output_file + "_2d", "wb") as f:
+            pickle.dump(poses_2d, f)
 
-    # Read the input image
-    image = cv2.imread(i)
+        #### CANVAS DRAWING SECTION
+        edges = []
+        if len(poses_3d):
+            poses_3d = rotate_poses(poses_3d, R, t)
+            poses_3d_copy = poses_3d.copy()
+            x = poses_3d_copy[:, 0::4]
+            y = poses_3d_copy[:, 1::4]
+            z = poses_3d_copy[:, 2::4]
+            poses_3d[:, 0::4], poses_3d[:, 1::4], poses_3d[:, 2::4] = -z, x, -y
 
-    ### Preprocess the input image
-    preprocessed_image = preprocessing(image, h, w)
-
-    # Perform synchronous inference on the image
-    inference_network.sync_inference(preprocessed_image)
-
-    # Obtain the output of the inference request
-    output = inference_network.extract_output()
-
-    # TODO: Save the raw format of output
-    filename = "outputs/{}/rawOutput".format(input_name)
-    if not os.path.exists(os.path.dirname(filename)):
-        try:
-            os.makedirs(os.path.dirname(filename))
-        except OSError as exc: # Guard against race condition
-            if exc.errno != errno.EEXIST:
-                raise
-
-    with open(filename, "wb") as f:
-        pickle.dump(output, f)
-
-    ### feeding the output to that function.
-    processed_output = handle_pose_output(output, image.shape)
-
-    # Create an output image based on network
-    output_image = create_output_image(image, processed_output)
-
-    # Save down the resulting image
-    cv2.imwrite("outputs/{}/output.png".format(input_name), output_image)
+            poses_3d = poses_3d.reshape(poses_3d.shape[0], 19, -1)[:, :, 0:3]
+            edges = (Plotter3d.SKELETON_EDGES + 19 * np.arange(poses_3d.shape[0]).reshape((-1, 1, 1))).reshape((-1, 2))
+        plotter.plot(canvas_3d, poses_3d, edges)
+        cv2.imshow(canvas_3d_window_name, canvas_3d)
 
 
-
-def main():
-    path = ".\images\\"
-
-    images = []
-    # r=root, d=directories, f = files
-    for r, d, f in os.walk(path):
-        for file in f:
-            if '.jpg' in file:
-                images.append(os.path.join(r, file))
-
-    for i in images:
-        args = get_args()
-        perform_inference(args, i)
+        draw_poses(frame, poses_2d)
+        current_time = (cv2.getTickCount() - current_time) / cv2.getTickFrequency()
+        if mean_time == 0:
+            mean_time = current_time
+        else:
+            mean_time = mean_time * 0.95 + current_time * 0.05
+        #cv2.putText(frame, 'FPS: {}'.format(int(1 / mean_time * 10) / 10),
+        #            (40, 80), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255))
+        cv2.imshow('ICV 3D Human Pose Estimation', frame)
 
 
-if __name__ == "__main__":
-    main()
+        cv2.imwrite(output_file + "_canvas.png", canvas_3d)
+        cv2.imwrite(output_file + "_2d_est.png", frame)
+
+        key = cv2.waitKey(delay)
+        if key == esc_code:
+            break
+        if key == p_code:
+            if delay == 1:
+                delay = 0
+            else:
+                delay = 1
+
+        if delay == 0 or not is_video:  # allow to rotate 3D canvas while on pause
+            key = 0
+            while (key != p_code
+                   and key != esc_code
+                   and key != space_code):
+                plotter.plot(canvas_3d, poses_3d, edges)
+                cv2.imshow(canvas_3d_window_name, canvas_3d)
+                key = cv2.waitKey(33)
+            if key == esc_code:
+                break
+            else:
+                delay = 1
