@@ -1,65 +1,47 @@
 #include "kinect.h"
 
 bool SUCCEEDED(int x){
-    return true;
+    return (x == 0);
 }
 
 bool FAILED(int x){
-    return true;
+    return (x != 0);
 }
 
-int IBody::GetJoints(int x, Joint y[JointType_Count] ){
-    return 1;
+Point::Point(double X, double Y, double Z){
+    this->X = X;
+    this->Y = Y;
+    this->Z = Z;
 }
 
-int IBody::get_IsTracked(BOOLEAN* x){
-    return 1;
+Joint::Joint(const Point& point){
+    this->Position.X = point.X;
+    this->Position.Y = point.Y;
+    this->Position.Z = point.Z;
 }
 
-int IBody::Release(){
-    return 1;
+std::vector<double> Reader::getdata(){
+
+    std::vector<double> data = std::vector<double>{ 1.7042829 , -48.80735   , 117.6024    ,   0.9467927,
+         1.6428919 , -64.92284   , 103.97016   ,   0.7952262,
+         2.6514637 ,   0.4538461 , 123.68647   ,  -1.        ,
+        14.399295  , -51.475468  , 124.7803    ,   0.9053518 ,
+        38.083683  , -40.8102    , 124.079     ,   0.97329307,
+        58.474243  , -45.775066  , 110.81941   ,   0.9206804 ,
+        8.101814  ,  -1.6204299 , 131.71086   ,   0.7866498 ,
+       12.644009  ,  33.131016  , 143.01453   ,   0.8547953 ,
+       18.135437  ,  67.72632   , 157.54741   ,   0.86326826,
+       -9.098     , -49.782078  , 116.98078   ,   0.9030191 ,
+      -35.90142   , -44.803444  , 121.69339   ,   0.9327499 ,
+      -48.46699   , -54.038162  , 118.40572   ,   0.9489326 ,
+      -10.999873  ,  -1.6697692 , 131.37958   ,   0.77029103,
+      -12.438702  ,  33.04743   , 140.95082   ,   0.8606605 ,
+      -12.462727  ,  67.656525  , 157.04054   ,   0.8725228 ,
+        1.4587829 , -65.916626  , 104.7222    ,   0.76979285,
+        6.3915153 , -63.372826  , 113.84957   ,   0.78465724,
+       -2.1604683 , -66.964226  , 106.374374  ,   0.7267456 ,
+        -5.3676915 , -64.07578   , 111.86209   ,   0.6529165
+    };
+    return data;
 }
 
-int IBodyFrame::GetAndRefreshBodyData(const int &x, IBody* y[10] ){
-    return 1;
-}
-
-int IBodyFrame::Release(){
-    return 1;
-}
-
-int IBodyFrameReader::AcquireLatestFrame(IBodyFrame** x){
-    return 1;
-}
-
-int IBodyFrameReader::Release(){
-    return 1;
-}
-
-int IBodyFrameSource::OpenReader(IBodyFrameReader** x){
-    return 1;
-}
-
-int IBodyFrameSource::Release(){
-    return 1;
-}
-
-int KinectSensor::Open(){
-    return 1;
-}
-
-int KinectSensor::get_BodyFrameSource(IBodyFrameSource** x){
-    return 1;
-}
-
-int KinectSensor::get_IsAvailable(BOOLEAN* x){
-    return 1;
-}
-
-int KinectSensor::Release(){
-    return 1;
-}
-
-int GetDefaultKinectSensor(KinectSensor** x){
-    return 1;
-}

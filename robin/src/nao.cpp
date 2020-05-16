@@ -25,6 +25,7 @@ Nao::Nao(const string ip, const int port) {
    for (int i = 0; i < ANGLES; i++)
       targetJoints[i] = joints[i];   
 
+   // TODO what are lows and highs for ?
    double lowerLim[] = {HeadYawLow, HeadPitchLow, 
                      LShoulderPitchLow, LShoulderRollLow, LElbowYawLow, LElbowRollLow, LWristYawLow, 
                      LHipYawPitchLow, LHipRollLow, LHipPitchLow, LKneePitchLow, LAnklePitchLow, LAnkleRollLow,
