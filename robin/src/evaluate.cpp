@@ -122,12 +122,15 @@ double Evaluate::evaluate(const int limbID, const bool logError) {
    H.setZero(3, 3);
    V.setZero(3, 3);
 
+   std::cerr << __LINE__ << ": " << "evaluate" << std::endl;
    kinematics.prepareForward();
 
+   std::cerr << __LINE__ << ": " << "evaluate" << std::endl;
    for (it = humanJointToRobotJoint[limbID].begin(); it != humanJointToRobotJoint[limbID].end(); it++) {
       humanJoint = it->first;
       robotJoint = it->second;
 
+   std::cerr << __LINE__ << ": " << "evaluate" << std::endl;
       //Store x, y and z-coordinates of the human joint relative to the base joint of the limb in matrix H.
       H(0, 0) = -(humanJointInfo[humanJoint].Position.X - humanJointInfo[baseHuman[limbID]].Position.X);
       H(1, 0) =   humanJointInfo[humanJoint].Position.Y - humanJointInfo[baseHuman[limbID]].Position.Y;
@@ -137,8 +140,11 @@ double Evaluate::evaluate(const int limbID, const bool logError) {
       H = rx * ry * rz * H;
                  
       //Store x, y and z-coordinates of the Nao joint relative to the base joint of the limb in matrix V.
+   std::cerr << __LINE__ << ": " << "evaluate" << std::endl;
       coordinates = getKinematicsCoordinates(robotJoint);
+   std::cerr << __LINE__ << ": " << "evaluate" << std::endl;
       coordinatesBase = getKinematicsCoordinates(baseNao[limbID]);
+   std::cerr << __LINE__ << ": " << "evaluate" << std::endl;
       V(0, 0) = coordinates[0] - coordinatesBase[0]; //x
       V(1, 0) = coordinates[1] - coordinatesBase[1]; //y
       V(2, 0) = coordinates[2] - coordinatesBase[2]; //z
@@ -146,8 +152,10 @@ double Evaluate::evaluate(const int limbID, const bool logError) {
       //The error is calculated by comparing the normalized values of the coordinates stored in matrix H and V.
 
       error += ((1 / H.norm()) * H - (1 / V.norm()) * V).norm();
+   std::cerr << __LINE__ << ": " << "evaluate" << std::endl;
    }//for 
 
+   std::cerr << __LINE__ << ": " << "evaluate" << std::endl;
    return pow(error * 3.0, 2);
 }//setKinematicsAngle
 

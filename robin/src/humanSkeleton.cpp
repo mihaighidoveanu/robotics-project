@@ -11,6 +11,7 @@ bool HumanSkeleton::getSkeletonCoordinates(vector<Joint>& jointCoordinates) {
         this->joints[idx] = joint;
         jointCoordinates[idx] = joint;
     }
+    return true;
 }
 
 /* int main(){ */

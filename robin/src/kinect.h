@@ -9,27 +9,53 @@ typedef bool BOOLEAN;
 bool SUCCEEDED(int);
 bool FAILED(int);
 
-const int JointType_Count = 19;
-const int JointType_AnkleLeft = 8;
-const int JointType_AnkleRight = 14;
-const int JointType_HipLeft = 6;
-const int JointType_HipRight = 12;
-const int JointType_ElbowLeft = 4;
-const int JointType_ElbowRight = 10;
-const int JointType_HandLeft = 5;
-const int JointType_HandRight = 11;
-const int JointType_SpineBase = 2; // missing info, might replace with mean of hips
-const int JointType_SpineShoulder = 0; // neck
-const int JointType_ShoulderLeft = 3;
-const int JointType_ShoulderRight = 9;
-const int JointType_KneeLeft = 7;
-const int JointType_KneeRight = 13;
-// not used here
-const int JointType_Nose = 13;
-const int JointType_EyeLeft = 13;
-const int JointType_EyeRight = 13;
-const int JointType_EarLeft = 13;
-const int JointType_EarRight = 13;
+#define KINECT true
+
+const int JointType_Count = 14;
+
+#if KINECT
+    const int JointType_AnkleLeft = 12;
+    const int JointType_AnkleRight = 15;
+    const int JointType_HipLeft = 10;
+    const int JointType_HipRight = 13;
+    const int JointType_ElbowLeft = 5;
+    const int JointType_ElbowRight = 8;
+    const int JointType_HandLeft = 6;
+    const int JointType_HandRight = 9;
+    const int JointType_SpineBase = 3; // missing info, might replace with mean of hips
+    const int JointType_SpineShoulder = 2; // neck
+    const int JointType_ShoulderLeft = 4;
+    const int JointType_ShoulderRight = 7;
+    const int JointType_KneeLeft = 11;
+    const int JointType_KneeRight = 14;
+    // not used here
+    const int JointType_Nose = 13;
+    const int JointType_EyeLeft = 13;
+    const int JointType_EyeRight = 13;
+    const int JointType_EarLeft = 13;
+    const int JointType_EarRight = 13;
+#else
+    const int JointType_AnkleLeft = 8;
+    const int JointType_AnkleRight = 14;
+    const int JointType_HipLeft = 6;
+    const int JointType_HipRight = 12;
+    const int JointType_ElbowLeft = 4;
+    const int JointType_ElbowRight = 10;
+    const int JointType_HandLeft = 5;
+    const int JointType_HandRight = 11;
+    const int JointType_SpineBase = 2; // missing info, might replace with mean of hips
+    const int JointType_SpineShoulder = 0; // neck
+    const int JointType_ShoulderLeft = 3;
+    const int JointType_ShoulderRight = 9;
+    const int JointType_KneeLeft = 7;
+    const int JointType_KneeRight = 13;
+    // not used here
+    const int JointType_Nose = 13;
+    const int JointType_EyeLeft = 13;
+    const int JointType_EyeRight = 13;
+    const int JointType_EarLeft = 13;
+    const int JointType_EarRight = 13;
+#endif
 
 const int BODY_COUNT = 1;
 

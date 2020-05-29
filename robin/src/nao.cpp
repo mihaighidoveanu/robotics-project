@@ -7,7 +7,8 @@
 void about() {
    cout <<  "LIACS Media Lab (LML)" << endl << 
             "This program has been written by Robbin Borst for the Informatics bachelors project of year 2016/2017." << endl <<
-            "It enables a NAO robot to imitate human motions in real-time. The project was supervised by Dr. E.M. Bakker." << 
+            "This program has been modified by Murad Hüdavendigar Bozik and Mihai Ghidoveanu for the Robotics Final project of spring semester 2020." << endl <<
+            "It enables a NAO robot to imitate human motions based on poses extracted from images with deep learning. The project was supervised by Dr. E.M. Bakker." << 
    endl;
 }//about
 
@@ -84,7 +85,8 @@ void Nao::updateLoop() {
 
    motion->setStiffnesses("Joints", 1.0);
    
-   boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+   // SLEEP
+   /* boost::this_thread::sleep(boost::posix_time::milliseconds(2000)); */
    
    for (int i = 0; i < ANGLES; i++)
       timeLists.arrayPush(0.01f);  

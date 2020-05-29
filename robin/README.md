@@ -10,3 +10,6 @@ All libraries used were found in the zip file with Robin's code, in Windows form
 - C++ NAOH25 - [NaoKinematics](https://github.com/kouretes/NAOKinematics/tree/master/Cpp/NAOH25)
 - C++ NAOQI [SDK](http://doc.aldebaran.com/2-1/dev/cpp/install_guide.html)
 - C++ [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page)
+
+# Kinect scale
+- Kinect values are taken from infrared 3d camera : explanation [here](https://medium.com/@lisajamhoury/understanding-kinect-v2-joints-and-coordinate-system-4f4b90b9df16)
