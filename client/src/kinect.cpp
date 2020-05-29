@@ -23,6 +23,7 @@ Joint::Joint(const Point& point){
 std::vector<double> Reader::getdata(){
 
     std::vector<double> data;
+    // Human Pose 3D data from OpenVino
     data = std::vector<double>{ 1.7042829 , -48.80735   , 117.6024    ,   0.9467927,
          1.6428919 , -64.92284   , 103.97016   ,   0.7952262,
          2.6514637 ,   0.4538461 , 123.68647   ,  -1.        ,
